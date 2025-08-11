@@ -1,0 +1,14 @@
+jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az aks get-credentials --resource-group $(aksResourceGroup) --name $(aksClusterName)
+            kubectl apply -f $(k8sManifests)
+        displayName: 'Deploy AKS'
