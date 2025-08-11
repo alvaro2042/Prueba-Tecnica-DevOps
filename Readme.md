@@ -3,26 +3,27 @@
 ## Conexión segura a un servidor remoto mediante SSH con clave privada
 
 ### 1. Generar un par de claves SSH en tu máquina local
-   ssh-keygen -t rsa -b 4096 -C "tu_correo@dominio.com"
+   ssh-keygen -t rsa -b 4096 -C "infra@XYZ.com"
    - Presionar Enter para aceptar ruta por defecto (~/.ssh/id_rsa)
 
 ### 2. Copiar la clave pública al servidor
    - Método rápido:
-     ssh-copy-id usuario@ip_servidor:puerto
+     ssh-copy-id user@ip_server:puerto
    - Método manual:
      a) En tu máquina local, mostrar tu clave pública:
         cat ~/.ssh/id_rsa.pub
      b) Copiar todo el contenido mostrado.
      c) Conectarte al servidor:
-        ssh usuario@ip_servidor
+        ssh user@ip_server:puerto
      d) Abrir el archivo authorized_keys:
         vi ~/.ssh/authorized_keys
      e) Pegar el contenido de la clave pública en el archivo, guardar y salir (`Esc`, escribir `:wq` y presionar `Enter`).
+        - Modo rapido -> echo "clave_publica" >> ~/.ssh/authorized_keys
      f) Ajustar permisos:
         chmod 600 ~/.ssh/authorized_keys
 
 ### 3. Probar conexión con clave
-   ssh usuario@ip_servidor:puerto
+   ssh user@ip_server:puerto
    - No debe pedir contraseña
 
 ---
