@@ -41,27 +41,21 @@
    7. Documentar secrets y cómo probar el workflow.
 ---  
 ## 4. Conexión segura a un servidor remoto mediante SSH con clave privada
-
    1. Generar un par de claves SSH en tu máquina local
-      - ssh-keygen -t rsa -b 4096 -C "infra@XYZ.com"
-      - Presionar Enter para aceptar ruta por defecto (~/.ssh/id_rsa)
+      -  ssh-keygen -t rsa -b 4096 -C "infra@XYZ.com"
+      -  Presionar Enter para aceptar ruta por defecto (~/.ssh/id_rsa)
    2. Copiar la clave pública al servidor
-      - Método rápido:
-        ssh-copy-id user@ip_server:puerto
+      -  Método rápido:
+         -  ssh-copy-id user@ip_server:puerto
       - Método manual:
-        - En tu máquina local, mostrar tu clave pública:
-           cat ~/.ssh/id_rsa.pub
-        - Copiar todo el contenido mostrado.
-        - Conectarte al servidor:
-           ssh user@ip_server:puerto
-        - Abrir el archivo authorized_keys:
-           vi ~/.ssh/authorized_keys
-        - Pegar el contenido de la clave pública en el archivo, guardar y salir (`Esc`, escribir `:wq` y presionar `Enter`).
-           - Modo rapido -> echo "clave_publica" >> ~/.ssh/authorized_keys
-        - Ajustar permisos:
-           chmod 600 ~/.ssh/authorized_keys
-   3. Probar conexión con clave
-      - ssh user@ip_server:puerto (No debe pedir contraseña)
+         -  En tu máquina local, mostrar tu clave pública: cat ~/.ssh/id_rsa.pub
+         -  Copiar todo el contenido mostrado.
+         -  Conectarte al servidor: ssh user@ip_server:puerto
+         -  Abrir el archivo authorized_keys: vi ~/.ssh/authorized_keys
+         -  Pegar el contenido de la clave pública en el archivo, guardar y salir (`Esc`, escribir `:wq` y presionar `Enter`).
+            -  Modo rapido -> echo "clave_publica" >> ~/.ssh/authorized_keys
+         -  Ajustar permisos: chmod 600 ~/.ssh/authorized_keys
+   3. Probar conexión con clave: ssh user@ip_server:puerto (No debe pedir contraseña)
 ---
 ## 5. Crear manifiesto YAML para AKS con recursos y variables de entorno
    1. Crear k8s/deployment.yml con:
@@ -77,7 +71,7 @@
    6. Verificar con kubectl get pods, kubectl logs y kubectl rollout status.
    7. Documentar variables de entorno esperadas, y cómo inyectarlas (ConfigMap/Secret).
 ---
-## 6. Diseñar pipeline en Bitbucket Pipelines (tests unitarios + deploy a staging) — Solución / pasos
+## 6. Diseñar pipeline en Bitbucket Pipelines (tests unitarios + deploy a staging)
    1. Crear bitbucket-pipelines.yml en la raíz.
    2. Definir pipeline para rama develop (build & test):
       -  Instalar dependencias (npm ci),
@@ -103,17 +97,17 @@
    6. Documentar uso y ejemplos de webhook.
 ---
 ## 8. Plantilla básica en Terraform (o Bicep) para desplegar VM en Azure
-1. Elegir herramienta (Terraform recomendado para portabilidad).
-2. Crear infra/azure-vm/main.tf, variables.tf, outputs.tf:
-   -  provider "azurerm" configurado,
-   -  azurerm_resource_group, azurerm_virtual_network, azurerm_subnet,
-   -  azurerm_public_ip, azurerm_network_interface,
-   -  azurerm_linux_virtual_machine con admin_ssh_key apuntando a ~/.ssh/id_*.pub.
-3. Configurar variables resource_group_name, location, admin_username, public_key_path.
-4. Inicializar y probar: terraform init, terraform plan, terraform apply.
-5. Configurar backend remoto (Azure Storage) para el state si es producción.
-6. Añadir outputs relevantes (IP pública).
-7. Documentar cómo pasar la ruta de la clave pública y cómo eliminar los recursos (terraform destroy).
+   1. Elegir herramienta (Terraform recomendado para portabilidad).
+   2. Crear infra/azure-vm/main.tf, variables.tf, outputs.tf:
+      -  provider "azurerm" configurado,
+      -  azurerm_resource_group, azurerm_virtual_network, azurerm_subnet,
+      -  azurerm_public_ip, azurerm_network_interface,
+      -  azurerm_linux_virtual_machine con admin_ssh_key apuntando a ~/.ssh/id_*.pub.
+   3. Configurar variables resource_group_name, location, admin_username, public_key_path.
+   4. Inicializar y probar: terraform init, terraform plan, terraform apply.
+   5. Configurar backend remoto (Azure Storage) para el state si es producción.
+   6. Añadir outputs relevantes (IP pública).
+   7. Documentar cómo pasar la ruta de la clave pública y cómo eliminar los recursos (terraform destroy).
 ---
 ## 9. Pasos de diagnóstico de fallo en deploy:
    1. Revisar logs del pipeline Azure DevOps (Build / Deploy) — ver si imagen se subió al ACR y tag usado.
