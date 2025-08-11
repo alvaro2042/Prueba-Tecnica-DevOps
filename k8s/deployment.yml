@@ -19,4 +19,11 @@ spec:
             - containerPort: 80
           env:
             - name: ENVIRONMENT
-              value: "(BranchName)" //ambiente
+              value: "$(branch)"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
