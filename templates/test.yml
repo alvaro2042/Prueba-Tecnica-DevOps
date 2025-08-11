@@ -1,0 +1,10 @@
+jobs:
+  - job: Test
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - script: |
+          echo "Running unit tests..."
+          npm install
+          npm test
+        displayName: Run Tests
