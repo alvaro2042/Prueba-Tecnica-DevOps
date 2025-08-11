@@ -1,0 +1,29 @@
+image: node:18
+
+pipelines:
+  branches:
+    qa:
+      - step:
+          name: Build and Test
+          caches:
+            - node
+          script:
+            - npm ci
+            - npm test
+            - docker build -t $BITBUCKET_REPO_OWNER/myapp:$BITBUCKET_COMMIT .
+            - docker tag $BITBUCKET_REPO_OWNER/myapp:$BITBUCKET_COMMIT $DOCKER_REGISTRY/$DOCKER_REPO:$BITBUCKET_COMMIT
+            - echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin
+            - docker push $DOCKER_REGISTRY/$DOCKER_REPO:$BITBUCKET_COMMIT
+
+      - step:
+          name: Deploy to Staging
+          deployment: staging
+          script:
+            - pipe: atlassian/ecs-deploy:1.2.1
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+                CLUSTER_NAME: $ECS_CLUSTER
+                SERVICE_NAME: $ECS_SERVICE_STAGING
+                TASK_DEFINITION: $ECS_TASK_DEFINITION
+                CONTAINER_IMAGES: $DOCKER_REGISTRY/$DOCKER_REPO:$BITBUCKET_COMMIT
