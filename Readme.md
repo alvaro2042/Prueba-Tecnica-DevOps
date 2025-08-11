@@ -46,7 +46,18 @@
 - `rotate_logs.sh`: Elimina logs antiguos manteniendo los últimos N.
 - `check_pods.sh`: Verifica si hay pods en CrashLoopBackOff o no Running.
 
-## Despliegue en AKS
-```bash
-az aks get-credentials --resource-group my-aks-rg --name my-aks-cluster
-kubectl apply -f k8s/
+## Pasos de diagnóstico de fallo en deploy:
+1. Revisar logs del pipeline Azure DevOps (Build / Deploy) — ver si imagen se subió al ACR y tag usado.
+2. Verificar que la imagen exista en ACR: az acr repository show --name <ACR_NAME> --repository myapp --query "tags"
+3. Obtener credenciales AKS y revisar pods:
+   - az aks get-credentials -g my-aks-rg -n my-aks-cluster
+   - kubectl get pods -n default
+   - kubectl describe pod <pod-name> -n default
+   - kubectl logs <pod-name> -n default --previous
+   - kubectl get events -n default
+4. Si kubectl describe muestra error de imagen (ImagePullBackOff): comprobar nombre/tag y permisos ACR/AKS (Aks needs pull permission).
+   - Verificar imagePullSecrets o que ACR esté ligado al AKS (AKS ACR integration / role assignment to SP): az role assignment list --assignee <aks-sp-id> --scope /subscriptions/.../resourceGroups/.../providers/Microsoft.ContainerRegistry/registries/<acr>
+5. Si CrashLoopBackOff por error de aplicación (e.g., configuración, falta de env var, DB unreachable): ver kubectl logs para la excepción y ajustar config/secret/env.
+6. Comprobar recursos (OOMKilled): kubectl describe pod → ver State / Last State / Reason.
+7. Prueba local: ejecutar la imagen localmente para reproducir error: docker run --rm -e ENVIRONMENT=production myregistry.azurecr.io/myapp:<tag>
+8. Corregir: rebuild de la imagen con fix → push → rerun pipeline → kubectl rollout restart deployment/myapp o kubectl set image.
