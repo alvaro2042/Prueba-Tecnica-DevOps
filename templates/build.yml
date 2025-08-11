@@ -1,0 +1,14 @@
+jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+      - task: Docker@2
+        inputs:
+          containerRegistry: '$(containerRegistryServiceConnection)'
+          repository: '$(imageRepository)'
+          command: 'buildAndPush'
+          Dockerfile: '$(dockerfilePath)'
+          tags: |
+            $(Build.BuildId)
+        displayName: 'Execute Build'
